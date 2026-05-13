@@ -144,12 +144,17 @@ export function RegisterAuctionPage() {
 
     setIsLoading(true);
     try {
+      // datetime-local input (YYYY-MM-DDTHH:mm) -> backend LocalDateTime (YYYY-MM-DDTHH:mm:ss)
+      const formattedEndTime = endTime.includes(':') && endTime.split(':').length === 2 
+        ? `${endTime}:00` 
+        : endTime;
+
       const res = await auctionApi.createAuction({
         title,
         description,
         category: toAuctionCategoryCode(category) as CategoryType,
         startPrice: parseInt(startPrice.replace(/,/g, '')),
-        endTime: endTime, // .toISOString() 제거 (백엔드 KST 기준에 맞춤)
+        endTime: formattedEndTime,
         pictures: images.map(({ url, imageKey }, index) => ({
           url,
           imageKey,
