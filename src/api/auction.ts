@@ -71,8 +71,8 @@ export const auctionApi = {
    * 4.3 결제하기
    * POST /payments
    */
-  processPayment: async (auctionId: number): Promise<ApiResponse<void>> => {
-    const { data } = await api.post<ApiResponse<void>>('/payments', { auctionId });
+  processPayment: async (auctionId: number, amount: number): Promise<ApiResponse<void>> => {
+    const { data } = await api.post<ApiResponse<void>>('/payments', { auctionId, amount });
     return data;
   },
 
