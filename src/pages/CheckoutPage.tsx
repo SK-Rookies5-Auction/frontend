@@ -45,7 +45,7 @@ export function CheckoutPage() {
     
     setIsProcessing(true);
     try {
-      const res = await auctionApi.processPayment(item.id, item.currentPrice);
+      const res = await auctionApi.processPayment(item.id);
       if (res.success) {
         showToast('Payment successful! Your item will be shipped soon.', 'success');
         navigate('/my-page?tab=auctions');
@@ -101,7 +101,7 @@ export function CheckoutPage() {
               <h2 className="text-white font-bold text-xl mb-4">Order Summary</h2>
               <div className="mb-6">
                 <div className="aspect-video rounded-xl overflow-hidden mb-4 border border-[#1e3a5f]">
-                  <img src={getRenderableImageUrl(item.mainPictureUrl, item.pictures?.[0]?.url)} className="w-full h-full object-cover" alt="" />
+                  <img src={getRenderableImageUrl(item.mainPictureUrl)} className="w-full h-full object-cover" alt="" />
                 </div>
                 <h3 className="text-white font-semibold leading-tight">{item.title}</h3>
                 <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">{formatCategoryDisplay(item.category)}</p>
