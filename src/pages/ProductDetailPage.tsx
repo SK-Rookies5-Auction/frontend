@@ -36,7 +36,6 @@ export function ProductDetailPage() {
   const [isSubmittingReply, setIsSubmittingReply] = useState(false);
 
   const isSeller = user && item && user.id === item.sellerId;
-  const isWinner = user && item && user.id === item.winnerId;
   const isEnded = item ? new Date(parseDate(item.endTime)).getTime() <= new Date().getTime() : false;
   const isFinished = item?.status === 'FINISHED';
 
@@ -310,17 +309,8 @@ export function ProductDetailPage() {
                   <div className="text-white text-sm font-bold uppercase tracking-wider mb-2">Auction Ended</div>
                   {item.winnerNickname ? (
                     <>
-                      <div className="text-3xl font-black text-white mb-4">Winner: {item.winnerNickname}</div>
-                      {isWinner ? (
-                        <button
-                          onClick={() => navigate(`/checkout/${item.id}`)}
-                          className="w-full bg-white text-blue-700 py-3 rounded-lg font-bold text-lg hover:bg-blue-50 transition-all shadow-xl"
-                        >
-                          결제하기
-                        </button>
-                      ) : (
-                        <div className="text-blue-200 text-sm">Final Price: ₩{formatPrice(item.currentPrice)}</div>
-                      )}
+                      <div className="text-3xl font-black text-white mb-1">Winner: {item.winnerNickname}</div>
+                      <div className="text-blue-200 text-sm">Final Price: ₩{formatPrice(item.currentPrice)}</div>
                     </>
                   ) : (
                     <div className="text-2xl font-bold text-white">No winning bids</div>
