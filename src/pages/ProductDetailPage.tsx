@@ -40,18 +40,6 @@ export function ProductDetailPage() {
   const isEnded = item ? new Date(parseDate(item.endTime)) <= new Date() : false;
   const isFinished = item?.status === 'FINISHED';
 
-  // Debugging logs to identify checkout button issues
-  useEffect(() => {
-    if (item) {
-      console.log('[Debug] Auction Status:', item.status);
-      console.log('[Debug] Current User ID:', user?.id, typeof user?.id);
-      console.log('[Debug] Winner ID:', item.winnerId, typeof item.winnerId);
-      console.log('[Debug] Is Finished:', isFinished);
-      console.log('[Debug] Is Winner Match:', user?.id == item.winnerId);
-      console.log('[Debug] Winner Nickname:', item.winnerNickname);
-    }
-  }, [item, user, isFinished]);
-
   useEffect(() => {
     if (!id) return;
 
