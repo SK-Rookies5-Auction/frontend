@@ -35,9 +35,9 @@ export function ProductDetailPage() {
   const [replyContent, setReplyContent] = useState('');
   const [isSubmittingReply, setIsSubmittingReply] = useState(false);
 
-  const isSeller = user && item && user.id === item.sellerId;
-  const isWinner = user && item && user.id === item.winnerId;
-  const isEnded = item ? new Date(parseDate(item.endTime)).getTime() <= new Date().getTime() : false;
+  const isSeller = user && item && user.id == item.sellerId;
+  const isWinner = user && item && user.id == item.winnerId;
+  const isEnded = item ? new Date(parseDate(item.endTime)) <= new Date() : false;
   const isFinished = item?.status === 'FINISHED';
 
   useEffect(() => {
