@@ -35,10 +35,11 @@ export function ProductDetailPage() {
   const [replyContent, setReplyContent] = useState('');
   const [isSubmittingReply, setIsSubmittingReply] = useState(false);
 
-  const isSeller = user && item && user.id == item.sellerId;
-  const isWinner = user && item && user.id == item.winnerId;
+  const isSeller = user && item && String(user.id) === String(item.sellerId);
+  const isWinner = user && item && item.winnerId && String(user.id) === String(item.winnerId);
   const isEnded = item ? new Date(parseDate(item.endTime)) <= new Date() : false;
   const isFinished = item?.status === 'FINISHED';
+  const showWinnerUI = isFinished || (isEnded && (!!item?.winnerId || !!item?.winnerNickname));
 
   // fetchData function to be reused
   const fetchData = useCallback(async () => {
@@ -322,7 +323,7 @@ export function ProductDetailPage() {
                 </div>
               </div>
 
-              {isFinished ? (
+              {showWinnerUI ? (
                 <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 mb-6 text-center">
                   <div className="text-white text-sm font-bold uppercase tracking-wider mb-2">Auction Ended</div>
                   {item.winnerNickname ? (
