@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Clock, Package, User, MessageCircle, CheckCircle, Shield, Loader2, Heart, CornerDownRight } from 'lucide-react';
 import { Layout } from '../components/layout/Layout';
@@ -40,41 +40,46 @@ export function ProductDetailPage() {
   const isEnded = item ? new Date(parseDate(item.endTime)) <= new Date() : false;
   const isFinished = item?.status === 'FINISHED';
 
-  // Debugging logs to identify checkout button issues
-  useEffect(() => {
-    if (item) {
-      console.log('[Debug] Auction Status:', item.status);
-      console.log('[Debug] Current User ID:', user?.id, typeof user?.id);
-      console.log('[Debug] Winner ID:', item.winnerId, typeof item.winnerId);
-      console.log('[Debug] Is Finished:', isFinished);
-      console.log('[Debug] Is Winner Match:', user?.id == item.winnerId);
-      console.log('[Debug] Winner Nickname:', item.winnerNickname);
-    }
-  }, [item, user, isFinished]);
-
-  useEffect(() => {
+  // fetchData function to be reused
+  const fetchData = useCallback(async () => {
     if (!id) return;
+    
+    // Ensure the state updates are asynchronous to avoid cascading renders warning
+    await Promise.resolve();
+    
+    try {
+      const [detailRes, commentsRes] = await Promise.all([
+        auctionApi.getAuctionDetail(id),
+        auctionApi.getComments(id)
+      ]);
 
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const [detailRes, commentsRes] = await Promise.all([
-          auctionApi.getAuctionDetail(id),
-          auctionApi.getComments(id)
-        ]);
+      if (detailRes.success) setItem(detailRes.data);
+      if (commentsRes.success) setComments(commentsRes.data);
+    } catch {
+      setError('Failed to load auction details');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id]);
 
-        if (detailRes.success) setItem(detailRes.data);
-        if (commentsRes.success) setComments(commentsRes.data);
-      } catch {
-        setError('Failed to load auction details');
-        showToast('Failed to load auction details', 'error');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Initial fetch when id changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchData();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchData]);
 
-    fetchData();
-  }, [id, showToast]);
+  // Polling logic: Poll every 3 seconds if auction ended but not yet FINISHED on server
+  useEffect(() => {
+    if (!isEnded || isFinished) return;
+
+    const interval = setInterval(() => {
+      fetchData();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [fetchData, isEnded, isFinished]);
 
   const handlePlaceBid = async () => {
     if (!isLoggedIn) {
